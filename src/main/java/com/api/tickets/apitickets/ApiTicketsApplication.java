@@ -1,4 +1,5 @@
 package com.api.tickets.apitickets;
+
 import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.SpringApplication;
@@ -16,8 +17,6 @@ import com.api.tickets.apitickets.data.TicketRepository;
 import com.api.tickets.apitickets.data.models.Ticket;
 import com.api.tickets.apitickets.data.models.TicketInformation;
 
-
-
 @SpringBootApplication
 @RestController
 public class ApiTicketsApplication {
@@ -34,6 +33,7 @@ public class ApiTicketsApplication {
 		return String.format("Hello %s!", name);
 	}
 
+	// EndPoint CrearTicket
 	@PostMapping("/ticket")
 	public @ResponseBody Ticket createTicket(@RequestBody TicketInformation ticketInformation) {
 		Ticket ticket = new Ticket();
@@ -43,35 +43,38 @@ public class ApiTicketsApplication {
 		return ticketRepository.save(ticket);
 	}
 
+	// Endpoint Eliminar Ticket por Id
 	@DeleteMapping("/ticket/{id}")
 	public @ResponseBody void deleteTicket(@PathVariable("id") int id) {
 		Optional<Ticket> optionalTicket = ticketRepository.findById(id);
 		optionalTicket.ifPresent((ticket) -> ticketRepository.delete(ticket));
 	}
 
+	// Endpoint Buscar ticket por Id
 	@GetMapping("/ticket/{id}")
 	public @ResponseBody Ticket searchTicket(@PathVariable("id") int id) {
 		return ticketRepository.findById(id).orElseGet(null);
-		
+
 	}
 
+	// Endpoint para obtener todos los tickets
 	@GetMapping("/ticket")
-	public @ResponseBody Iterable<Ticket> allTicket(){
+	public @ResponseBody Iterable<Ticket> allTicket() {
 		return ticketRepository.findAll();
 	}
-
+// Endpoint para actualizar los tickets por Id 
 	@PutMapping("/ticket/{id}")
 	public @ResponseBody Ticket updateTicket(
-		@RequestBody TicketInformation ticketInformation,
-		@PathVariable("id") int id) {
+			@RequestBody TicketInformation ticketInformation,
+			@PathVariable("id") int id) {
 		Optional<Ticket> optionalTicket = ticketRepository.findById(id);
 		return optionalTicket.map((ticket) -> {
 			ticket.setUserId(ticketInformation.getUserId());
 			ticket.setUpdatedDate(new java.sql.Timestamp(new java.util.Date().getTime()));
 			return ticket;
 		})
-		.map((ticket) -> ticketRepository.save(ticket))
-		.orElseGet(null);
+				.map((ticket) -> ticketRepository.save(ticket))
+				.orElseGet(null);
 	}
 
 }
